@@ -6,9 +6,11 @@
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
 #include "Components/ComboBoxString.h"
+#include "Components/Image.h"
 #include "Components/PanelWidget.h"
 #include "Components/TextBlock.h"
 #include "Components/VerticalBox.h"
+#include "Engine/Texture2D.h"
 #include "Kismet/KismetSystemLibrary.h"
 
 #include "Types/CarEngine.h"
@@ -43,7 +45,7 @@ void ACarConfiguratorHUD::BindDelegates()
 	{
 		if (CarConfiguratorOverlay->Manufacturers)
 		{
-			CarConfiguratorOverlay->Manufacturers->OnSelectionChanged.AddDynamic(this, &ACarConfiguratorHUD::OnSelectManufacturer);		
+			CarConfiguratorOverlay->Manufacturers->OnSelectionChanged.AddDynamic(this, &ACarConfiguratorHUD::OnSelectManufacturer);
 		}
 
 		if (CarConfiguratorOverlay->Models)
@@ -237,6 +239,7 @@ void ACarConfiguratorHUD::UpdateColorsInterior(const TArray<FCarColorInterior>& 
 void ACarConfiguratorHUD::SelectManufacturer(const FCarManufacturer& Manufacturer)
 {
 	ResetConfiguredCar();
+	ShowModelPreview(false);
 	SetConfiguredCarManufacturer(Manufacturer);
 
 	if (Cars)
@@ -248,6 +251,12 @@ void ACarConfiguratorHUD::SelectManufacturer(const FCarManufacturer& Manufacture
 void ACarConfiguratorHUD::SelectModel(const FCarModel& Model) 
 {
 	FCarModel ConfiguredCarModel = Model;
+
+	if (Model.ExteriorColors.Num() > 0)
+	{
+		ShowModelPreview(true);
+		UpdateModelPreview(Model.ExteriorColors[0].PreviewTexture);		
+	}
 
 	// NOTE: We empty Engines, ExteriorColors, and InteriorColors as they will be populated with ALL options for the specified model
 	//		 Now that we are creating a ConfiguredCar, we only want the individual selections.
@@ -271,11 +280,33 @@ void ACarConfiguratorHUD::SelectEngine(const FCarEngine& Engine)
 void ACarConfiguratorHUD::SelectExteriorColor(const FCarColorExterior& ExteriorColor)
 {
 	SetConfiguredCarExteriorColor(ExteriorColor);
+
+	UpdateModelPreview(ExteriorColor.PreviewTexture);
 }
 
 void ACarConfiguratorHUD::SelectInteriorColor(const FCarColorInterior& InteriorColor)
 {
 	SetConfiguredCarInteriorColor(InteriorColor);
+}
+
+void ACarConfiguratorHUD::ShowModelPreview(const bool bShowModelPreview) const
+{
+	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ModelPreview)
+	{
+		const ESlateVisibility Visibility = bShowModelPreview ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
+		CarConfiguratorOverlay->ModelPreview->SetVisibility(Visibility);
+	}
+}
+
+void ACarConfiguratorHUD::UpdateModelPreview(UTexture2D* PreviewTexture) const
+{
+	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ModelPreview)
+	{
+		if (PreviewTexture)
+		{
+			CarConfiguratorOverlay->ModelPreview->SetBrushFromTexture(PreviewTexture);			
+		}
+	}
 }
 
 void ACarConfiguratorHUD::SetConfiguredCarManufacturer(const FCarManufacturer& ManufacturerToConfigure)

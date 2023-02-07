@@ -11,10 +11,10 @@
 class UTextBlock;
 
 
-/*
- *	Base class for a configured car item heading, and responsible for binding widgets.
+/**
+ * Base class for a configured car item heading, and responsible for binding widgets.
  *	
- *	Supports the display of configured car item headings.
+ * Supports the display of configured car item headings.
  */
 UCLASS()
 class CARCONFIGURATOR_API UConfiguredCarItemHeading : public UUserWidget
@@ -24,9 +24,7 @@ class CARCONFIGURATOR_API UConfiguredCarItemHeading : public UUserWidget
 
 public:
 
-	/**
-	 *	Used to display the name of the heading
-	 */
+	/** Used to display the name of the heading */
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Name;
 

@@ -9,7 +9,7 @@
 
 
 /**
- *	A representation of a real world car for use within the product configurator tool
+ * A representation of a real world car for use within the product configurator tool
  */
 USTRUCT(BlueprintType)
 struct FCar
@@ -19,20 +19,14 @@ struct FCar
 
 public:
 
-	/**
-	 *	Default constructor
-	 */
+	/** Default constructor  */
 	FCar() {};
 
-	/**
-	 *	The car's manufacturer
-	 */
+	/** The car's manufacturer */
 	UPROPERTY(EditAnywhere)
 	FCarManufacturer Manufacturer;
 
-	/**
-	 *	The car's model
-	 */
+	/** The car's model */
 	UPROPERTY(EditAnywhere)
 	FCarModel Model;
 };

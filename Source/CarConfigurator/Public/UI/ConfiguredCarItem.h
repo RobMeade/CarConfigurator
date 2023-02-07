@@ -11,10 +11,10 @@
 class UTextBlock;
 
 
-/*
- *	Base class for a configured car item and responsible for binding widgets.
+/**
+ * Base class for a configured car item and responsible for binding widgets.
  *
- *	Supports the display of configured car items.
+ * Supports the display of configured car items.
  */
 UCLASS()
 class CARCONFIGURATOR_API UConfiguredCarItem : public UUserWidget
@@ -24,21 +24,15 @@ class CARCONFIGURATOR_API UConfiguredCarItem : public UUserWidget
 
 public:
 
-	/**
-	 *	Used to display the name of the configured car item
-	 */
+	/** Used to display the name of the configured car item */
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Name;
 
-	/**
-	 *	Used to display the price of the configured car item
-	 */
+	/** Used to display the price of the configured car item */
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Price;
 
-	/**
-	 *	Used to display the description of the configured car item
-	 */
+	/** Used to display the description of the configured car item */
 	UPROPERTY(meta = (BindWidget))
 	UTextBlock* Description;
 

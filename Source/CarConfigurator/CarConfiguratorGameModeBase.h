@@ -9,7 +9,7 @@
 
 
 /**
- *	
+ *
  */
 UCLASS()
 class CARCONFIGURATOR_API ACarConfiguratorGameModeBase : public AGameModeBase

@@ -6,7 +6,7 @@
 
 
 /**
- *	A simple container for extra option for the car
+ * A simple container for extra option for the car
  */
 USTRUCT(BlueprintType)
 struct FCarExtra
@@ -16,20 +16,14 @@ struct FCarExtra
 
 public:
 
-	/**
-	 *	Default constructor
-	 */
+	/** Default constructor */
 	FCarExtra() {};
 
-	/**
-	 *	The extra's name
-	 */
+	/** The extra's name */
 	UPROPERTY(EditAnywhere)
 	FString Name;
 
-	/**
-	 *	The extra's price, this value is added to the model's base price
-	 */
+	/** The extra's price, this value is added to the model's base price */
 	UPROPERTY(EditAnywhere)
 	int32 Price = 0;
 };

@@ -13,7 +13,7 @@ class UCarConfiguratorOverlay;
 
 
 /**
- *	
+ *
  */
 UCLASS()
 class CARCONFIGURATOR_API ACarConfiguratorPlayerController : public APlayerController
@@ -45,7 +45,7 @@ private:
 	UPROPERTY()
 	ACarConfiguratorHUD* CarConfiguratorHUD;
 
-	/**	The car configurator overlay widget which will be added to the HUD */
+	/** The car configurator overlay widget which will be added to the HUD */
 	UPROPERTY()
 	UCarConfiguratorOverlay* CarConfiguratorOverlay;
 };

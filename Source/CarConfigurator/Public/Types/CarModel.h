@@ -11,7 +11,7 @@
 
 
 /**
- *	A container for a model option for the car.  Can be used to hold all options relevant to the specific model, or, to hold configured options for a specific selection.
+ * A container for a model option for the car.  Can be used to hold all options relevant to the specific model, or, to hold configured options for a specific selection.
  */
 USTRUCT(BlueprintType)
 struct FCarModel
@@ -21,55 +21,43 @@ struct FCarModel
 
 public:
 
-	/**
-	 *	Default constructor
-	 */
+	/** Default constructor */
 	FCarModel() {};
 
 	/**
-	 *  Name equality operator
+	 * Name equality operator
+	 *
+	 * @param Other The other model, used to compare names
+	 *
+	 * @return true or false depending on whether the names match
 	 */
 	bool operator==(const FCarModel& Other) const { return Name == Other.Name; }
 
-	/**
-	 *	The model's name
-	 */
+	/** The model's name */
 	UPROPERTY(EditAnywhere)
 	FString Name;
 
-	/**
-	 *	The model's description
-	 */
+	/** The model's description */
 	UPROPERTY(EditAnywhere)
 	FString Description;
 
-	/**
-	 *	The model's base price
-	 */
+	/** The model's base price */
 	UPROPERTY(EditAnywhere)
 	int32 BasePrice = 0;
 
-	/**
-	 *	The model's engines
-	 */
+	/** The model's engines */
 	UPROPERTY(EditAnywhere)
 	TArray<FCarEngine> Engines;
 
-	/**
-	 *	The model's exterior colors
-	 */
+	/** The model's exterior colors */
 	UPROPERTY(EditAnywhere)
 	TArray<FCarColorExterior> ExteriorColors;
 
-	/**
-	 *	The model's interior colors
-	 */
+	/** The model's interior colors */
 	UPROPERTY(EditAnywhere)
 	TArray<FCarColorInterior> InteriorColors;
 
-	/**
-	 *	The model's extras categories
-	 */
+	/** The model's extras categories  */
 	UPROPERTY(EditAnywhere)
 	TArray<FCarExtraCategory> ExtraCategories;	
 };

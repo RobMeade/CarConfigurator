@@ -8,7 +8,7 @@
 
 
 /**
- *	A simple container for a manufacturer option for the car
+ * A simple container for a manufacturer option for the car
  */
 USTRUCT(BlueprintType)
 struct FCarManufacturer
@@ -18,19 +18,19 @@ struct FCarManufacturer
 
 public:
 
-	/**
-	 *	Default constructor
-	 */
+	/** Default constructor */
 	FCarManufacturer() {};
 
 	/**
-	 *  Name equality operator
+	 * Name equality operator
+	 *
+	 * @param Other The other manufacturer, used to compare names
+	 *
+	 * @return True or false depending on whether the names match
 	 */
 	bool operator==(const FCarManufacturer& Other) const { return Name == Other.Name; }
 
-	/**
-	 *	The manufacturers name
-	 */
+	/** The manufacturers name */
 	UPROPERTY(EditAnywhere)
 	FString Name;
 };

@@ -8,7 +8,7 @@
 
 
 /**
- *	A container for related extra options for a car, which can be categorized.  Supports sorting by Order in addition to Name.
+ * A container for related extra options for a car, which can be categorized.  Supports sorting by Order in addition to Name.
  */
 USTRUCT(BlueprintType)
 struct FCarExtraCategory
@@ -18,26 +18,18 @@ struct FCarExtraCategory
 
 public:
 
-	/**
-	 *	Default constructor
-	 */
+	/** Default constructor */
 	FCarExtraCategory() {};
 
-	/**
-	 *	The category's name
-	 */
+	/** The category's name */
 	UPROPERTY(EditAnywhere)
 	FString Name;
 
-	/**
-	 *	The category's order, used when ordering the categories for a model
-	 */
+	/** The category's order, used when ordering the categories for a model */
 	UPROPERTY(EditAnywhere)
 	int32 Order = 0;
 
-	/**
-	 *	The array of extras for the category
-	 */
+	/** The array of extras for the category */
 	UPROPERTY(EditAnywhere)
 	TArray<FCarExtra> Extras;
 };

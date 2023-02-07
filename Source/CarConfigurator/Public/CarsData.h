@@ -11,7 +11,7 @@
 
 
 /**
- *	Serves as the primary source of data for cars.  Provides helper functions to return specific data from the main source.
+ * Serves as the primary source of data for cars.  Provides helper functions to return specific data from the main source.
  */
 UCLASS(Blueprintable)
 class CARCONFIGURATOR_API UCarsData : public UObject
@@ -21,80 +21,89 @@ class CARCONFIGURATOR_API UCarsData : public UObject
 
 public:
 
-	/**
-	 *	Default constructor
-	 */
+	/** Default constructor */
 	UCarsData();
 
-	/**
-	 *	Populates arrays of unique data which will be used for getters
-	 */
+	/** Populates arrays of unique data which will be used for getters */
 	void InitializeData();
 
 	/**
-	 *	Gets the cars, contains all cars data
+	 * Gets the cars, contains all cars data
 	 *
-	 *	@return	An array of FCar
+	 * @return An array of cars, or, an empty TArray
 	 */
 	TArray<FCar> GetCars();
 
 	/**
-	 *	Gets the unique manufacturers for the current data set
+	 * Gets the unique manufacturers for the current data set
 	 *
-	 *  @return	An array of unique FCarManufacturers 
+	 * @return An array of unique manufacturers, or, an empty TArray 
 	 */
 	TArray<FCarManufacturer> GetManufacturers();
 
 	/**
-	 *	Gets the first manufacturer from Cars for the specified manufacturer name
+	 * Gets the first manufacturer from Cars for the specified manufacturer name
 	 *
-	 *	@param ManufacturerName	The name of the manufacturer to return
+	 * @param ManufacturerName The name of the manufacturer to return
 	 *
-	 *	@return An FCarManufacturer
+	 * @return A manufacturer for the specified manufacturer name, or, an empty FCanManufacturer
 	 */
 	FCarManufacturer GetManufacturer(const FString& ManufacturerName);
 
 	/**
-	 *	Gets the unique models for the specified manufacturer name
+	 * Gets the unique models for the specified manufacturer name
 	 *
-	 *  @return	An array of unique FCarModels 
+	 * @param ManufacturerName The name of the manufacturer to return models for
+	 *
+	 * @return An array of unique models for the specified manufacturer name, or, an empty TArray 
 	 */
 	TArray<FCarModel> GetModels(const FString& ManufacturerName) const;
 
 	/**
-	 *	Gets the first matching model from Cars for the specified model name
+	 * Gets the first matching model from Cars for the specified model name
 	 *
-	 *  @return	An FCarModel 
+	 * @param ModelName The name of the model to return
+	 *
+	 * @return A mode for the specified model name, or, an empty FCarModel 
 	 */
 	FCarModel GetModel(const FString& ModelName) const;
 
 	/**
-	 *	Gets the first matching engine from Cars for the specified model name and engine name
+	 * Gets the first matching engine from Cars for the specified model name and engine name
 	 *
-	 *	@return An FCarEngine
+	 * @param ModelName The name of the model to return the engine for, improves searching
+	 * @param EngineName The name of the engine to return 
+	 *
+	 * @return An engine for the specified model name and engine name, or, an empty FCarEngine
 	 */
 	FCarEngine GetEngine(const FString& ModelName, const FString& EngineName) const;
 
 	/**
-	 *	Gets the first matching exterior color from Cars for the specified model name and color name
+	 * Gets the first matching exterior color from Cars for the specified model name and color name
 	 *
-	 *	@return An FCarColorExterior
+	 * @param ModelName The name of the model to return the exterior color for, improves searching
+	 * @param ColorName The name of the color to return
+	 *
+	 * @return An exterior color for the specified model name and color name, or, an empty FCarColorExterior
 	 */
 	FCarColorExterior GetExteriorColor(const FString& ModelName, const FString& ColorName) const;
 
 	/**
-	 *	Gets the first matching interior color from Cars for the specified model name and color name
+	 * Gets the first matching interior color from Cars for the specified model name and color name
 	 *
-	 *	@return An FCarColorInterior
+	 * @param ModelName The name of the model to return the interior color for, improves searching
+	 * @param ColorName The name of the interior color to return
+	 *
+	 * @return An interior color for the specified model name and color name, or, an empty FCarColorInterior
 	 */
 	FCarColorInterior GetInteriorColor(const FString& ModelName, const FString& ColorName) const;
 
 	/**
-	 *	Calculates the total prices for the specified configured car.
+	 * Calculates the total prices for the specified configured car.
 	 *
-	 *	@param	ConfiguredCar	The configured car to calculate the total price for
+	 * @param ConfiguredCar The configured car to calculate the total price for
 	 *
-	 *	@return	The total price of the car as an int32
+	 * @return The total price of the car as an int32
 	 */
 	int32 GetTotalPriceForConfiguredCar(const FCar& ConfiguredCar) const;
 
@@ -104,20 +113,14 @@ protected:
 
 private:
 
-	/**
-	 *	Iterates through Cars and extracts each unique manufacturer, adding it to the Manufacturers helper array
-	 */
+	/** Iterates through Cars and extracts each unique manufacturer, adding it to the Manufacturers helper array */
 	void InitializeManufacturers();
 
-	/**
-	 *	The array of cars
-	 */
+	/** The array of cars */
 	UPROPERTY(EditAnywhere)
 	TArray<FCar> Cars;
 
-	/**
-	 *	An array of unique manufacturers, acts as a helper array to remove excessive looping of the main Cars array
-	 */
+	/** An array of unique manufacturers, acts as a helper array to remove excessive looping of the main Cars array */
 	UPROPERTY()
 	TArray<FCarManufacturer> Manufacturers;
 
