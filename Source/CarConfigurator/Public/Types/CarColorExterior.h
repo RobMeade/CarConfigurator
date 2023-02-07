@@ -1,10 +1,13 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Rob Meade. All Rights Reserved.
 
 #pragma once
 
 #include "CarColorExterior.generated.h"
 
 
+/**
+ *	A simple container for an exterior color option for the car
+ */
 USTRUCT(BlueprintType)
 struct FCarColorExterior
 {
@@ -13,9 +16,20 @@ struct FCarColorExterior
 
 public:
 
+	/**
+	 *	Default constructor
+	 */
+	FCarColorExterior() {};
+
+	/**
+	 *	The color exterior's name
+	 */
 	UPROPERTY(EditAnywhere)
 	FString Name;
 
+	/**
+	 *	The color exterior's price, this value is added to the model's base price
+	 */
 	UPROPERTY(EditAnywhere)
-	int32 Price;
+	int32 Price = 0;
 };

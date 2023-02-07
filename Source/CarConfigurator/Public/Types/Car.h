@@ -1,4 +1,4 @@
-// Fill out your copyright notice in the Description page of Project Settings.
+// Copyright Rob Meade. All Rights Reserved.
 
 #pragma once
 
@@ -8,6 +8,9 @@
 #include "Car.generated.h"
 
 
+/**
+ *	A representation of a real world car for use within the product configurator tool
+ */
 USTRUCT(BlueprintType)
 struct FCar
 {
@@ -16,9 +19,20 @@ struct FCar
 
 public:
 
+	/**
+	 *	Default constructor
+	 */
+	FCar() {};
+
+	/**
+	 *	The car's manufacturer
+	 */
 	UPROPERTY(EditAnywhere)
 	FCarManufacturer Manufacturer;
 
+	/**
+	 *	The car's model
+	 */
 	UPROPERTY(EditAnywhere)
 	FCarModel Model;
 };
