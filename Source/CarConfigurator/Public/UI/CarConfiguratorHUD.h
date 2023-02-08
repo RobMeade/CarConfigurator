@@ -289,11 +289,26 @@ private:
 	 */
 	void AddConfiguredCarItem(const FString& Name) const;
 
-	/** Removes all items from the configured car overly and resets the total price to zero */
+	/**
+	 * Resets the model preview, removing any set model textures
+	 */
+	void ResetModelPreview() const;
+
+	/** Removes all items from the configured car overlay and resets the total price to zero */
 	void ResetConfiguredCar() const;
 
-	/** Removes all options from models, and the related options for engines, colors exterior, and colors interior */
-	void ResetModelsAndRelatedOptions() const;
+	/**
+	 * Adds the array of options to the combobox.
+	 *
+	 * If the Options array is not empty, the combobox is enabled and options are added.  The first option is set as the selected option.
+	 *
+	 * If the Options array is empty, the combobox is disabled.  An option is added, and selected, to indicate no options are available.
+	 *
+	 * @param ComboBox The combobox to add options to
+	 * @param Options An array of options to add to the combobox
+	 */
+	template <typename T>
+	void AddComboBoxOptions(UComboBoxString* ComboBox, const TArray<T>& Options) const;
 
 	/**
 	 * Removes all of the options from the specified combobox
@@ -310,10 +325,15 @@ private:
 	FText GetFormattedPrice(const int32& Price) const;
 
 	/**
+	 * Re-initializes the car configurator, resetting the model preview, and configured car overlay.
+	 */
+	void ReInitializeCarConfigurator();
+
+	/**
 	 * Delegate for quitting the game/application
 	 *
 	 * Note: Not the normal location for this functionality, but as this is a UI based game/application
-	 *		 and we don't have anything else to clear up in the GameMode or PlayerController, this is ok
+	 * and we don't have anything else to clear up in the GameMode or PlayerController, this is ok
 	 */
 	UFUNCTION()
 	void OnQuit();

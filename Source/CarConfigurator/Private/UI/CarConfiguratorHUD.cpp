@@ -87,64 +87,77 @@ void ACarConfiguratorHUD::DisplayCarData()
 
 			UpdateAvailableCars(Cars->GetCars().Num());
 			UpdateManufacturers(Cars->GetManufacturers());
-
-			ResetConfiguredCar();
 		}
 	}
 }
 
 void ACarConfiguratorHUD::OnSelectManufacturer(const FString SelectedManufacturer, const ESelectInfo::Type SelectionInfoType) 
 {
-	if (SelectionInfoType != ESelectInfo::Direct)
+	const bool bCanSelectManufacturer =
+		Cars &&
+		CarConfiguratorOverlay &&
+		CarConfiguratorOverlay->Manufacturers &&
+		CarConfiguratorOverlay->Manufacturers->GetIsEnabled();
+
+	if (bCanSelectManufacturer)
 	{
-		if (Cars)
-		{
-			SelectManufacturer(Cars->GetManufacturer(SelectedManufacturer));				
-		}	
-	}
+		SelectManufacturer(Cars->GetManufacturer(SelectedManufacturer));				
+	}	
 }
 
 void ACarConfiguratorHUD::OnSelectModel(const FString SelectedModel, const ESelectInfo::Type SelectionInfoType)
 {
-	if (SelectionInfoType != ESelectInfo::Direct)
+	const bool bCanSelectModel =
+		Cars &&
+		CarConfiguratorOverlay &&
+		CarConfiguratorOverlay->Models &&
+		CarConfiguratorOverlay->Models->GetIsEnabled();
+
+	if (bCanSelectModel)
 	{
-		if (Cars)
-		{
-			SelectModel(Cars->GetModel(SelectedModel));			
-		}
+		SelectModel(Cars->GetModel(SelectedModel));			
 	}
 }
 
 void ACarConfiguratorHUD::OnSelectEngine(const FString SelectedEngine, const ESelectInfo::Type SelectionInfoType)
 {
-	if (SelectionInfoType != ESelectInfo::Direct)
+	const bool bCanSelectEngine =
+		Cars &&
+		CarConfiguratorOverlay &&
+		CarConfiguratorOverlay->Engines &&
+		CarConfiguratorOverlay->Engines->GetIsEnabled();
+
+	if (bCanSelectEngine)
 	{
-		if (Cars)
-		{
-			SelectEngine(Cars->GetEngine(ConfiguredCar.Model.Name, SelectedEngine));
-		}
+		SelectEngine(Cars->GetEngine(ConfiguredCar.Model.Name, SelectedEngine));
 	}
 }
 
 void ACarConfiguratorHUD::OnSelectExteriorColor(const FString SelectedExteriorColor, const ESelectInfo::Type SelectionInfoType)
 {
-	if (SelectionInfoType != ESelectInfo::Direct)
+	const bool bCanSelectExteriorColor =
+		Cars &&
+		CarConfiguratorOverlay &&
+		CarConfiguratorOverlay->ColorsExterior &&
+		CarConfiguratorOverlay->ColorsExterior->GetIsEnabled();
+
+	if (bCanSelectExteriorColor)
 	{
-		if (Cars)
-		{
-			SelectExteriorColor(Cars->GetExteriorColor(ConfiguredCar.Model.Name, SelectedExteriorColor));
-		}
+		SelectExteriorColor(Cars->GetExteriorColor(ConfiguredCar.Model.Name, SelectedExteriorColor));
 	}
 }
 
 void ACarConfiguratorHUD::OnSelectInteriorColor(const FString SelectedInteriorColor, const ESelectInfo::Type SelectionInfoType)
 {
-	if (SelectionInfoType != ESelectInfo::Direct)
+	const bool bCanSelectInteriorColor =
+		Cars &&
+		CarConfiguratorOverlay &&
+		CarConfiguratorOverlay->ColorsInterior &&
+		CarConfiguratorOverlay->ColorsInterior->GetIsEnabled();
+
+	if (bCanSelectInteriorColor)
 	{
-		if (Cars)
-		{
-			SelectInteriorColor(Cars->GetInteriorColor(ConfiguredCar.Model.Name, SelectedInteriorColor));
-		}
+		SelectInteriorColor(Cars->GetInteriorColor(ConfiguredCar.Model.Name, SelectedInteriorColor));			
 	}
 }
 
@@ -160,15 +173,7 @@ void ACarConfiguratorHUD::UpdateManufacturers(const TArray<FCarManufacturer>& Ma
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->Manufacturers)
 	{
-		CarConfiguratorOverlay->Manufacturers->ClearOptions();
-
-		CarConfiguratorOverlay->Manufacturers->AddOption("Manufacturer");
-		CarConfiguratorOverlay->Manufacturers->SetSelectedIndex(0);
-
-		for (auto& Manufacturer : Manufacturers)
-		{
-			CarConfiguratorOverlay->Manufacturers->AddOption(Manufacturer.Name);
-		}		
+		AddComboBoxOptions<FCarManufacturer>(CarConfiguratorOverlay->Manufacturers, Manufacturers);
 	}
 }
 
@@ -176,15 +181,7 @@ void ACarConfiguratorHUD::UpdateModels(const TArray<FCarModel>& Models) const
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->Models)
 	{
-		ResetModelsAndRelatedOptions();
-
-		CarConfiguratorOverlay->Models->AddOption("Model");
-		CarConfiguratorOverlay->Models->SetSelectedIndex(0);
-
-		for (auto& Model : Models)
-		{
-			CarConfiguratorOverlay->Models->AddOption(Model.Name);
-		}		
+		AddComboBoxOptions<FCarModel>(CarConfiguratorOverlay->Models, Models);
 	}
 }
 
@@ -192,15 +189,7 @@ void ACarConfiguratorHUD::UpdateEngines(const TArray<FCarEngine>& Engines) const
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->Engines)
 	{
-		CarConfiguratorOverlay->Engines->ClearOptions();
-
-		CarConfiguratorOverlay->Engines->AddOption("Engine");
-		CarConfiguratorOverlay->Engines->SetSelectedIndex(0);
-
-		for (auto& Engine : Engines)
-		{
-			CarConfiguratorOverlay->Engines->AddOption(Engine.Name);
-		}		
+		AddComboBoxOptions<FCarEngine>(CarConfiguratorOverlay->Engines, Engines);
 	}
 }
 
@@ -208,15 +197,7 @@ void ACarConfiguratorHUD::UpdateColorsExterior(const TArray<FCarColorExterior>& 
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ColorsExterior)
 	{
-		CarConfiguratorOverlay->ColorsExterior->ClearOptions();
-
-		CarConfiguratorOverlay->ColorsExterior->AddOption("Color - Exterior");
-		CarConfiguratorOverlay->ColorsExterior->SetSelectedIndex(0);
-
-		for (auto& Color : ColorsExterior)
-		{
-			CarConfiguratorOverlay->ColorsExterior->AddOption(Color.Name);
-		}			
+		AddComboBoxOptions<FCarColorExterior>(CarConfiguratorOverlay->ColorsExterior, ColorsExterior);
 	}
 }
 
@@ -224,22 +205,14 @@ void ACarConfiguratorHUD::UpdateColorsInterior(const TArray<FCarColorInterior>& 
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ColorsExterior)
 	{
-		CarConfiguratorOverlay->ColorsInterior->ClearOptions();
-
-		CarConfiguratorOverlay->ColorsInterior->AddOption("Color - Interior");
-		CarConfiguratorOverlay->ColorsInterior->SetSelectedIndex(0);
-
-		for (auto& Color : ColorsInterior)
-		{
-			CarConfiguratorOverlay->ColorsInterior->AddOption(Color.Name);
-		}
+		AddComboBoxOptions<FCarColorInterior>(CarConfiguratorOverlay->ColorsInterior, ColorsInterior);
 	}
 }
 
 void ACarConfiguratorHUD::SelectManufacturer(const FCarManufacturer& Manufacturer)
 {
-	ResetConfiguredCar();
-	ShowModelPreview(false);
+	ReInitializeCarConfigurator();
+
 	SetConfiguredCarManufacturer(Manufacturer);
 
 	if (Cars)
@@ -259,8 +232,9 @@ void ACarConfiguratorHUD::SelectModel(const FCarModel& Model)
 	}
 
 	// NOTE: We empty Engines, ExteriorColors, and InteriorColors as they will be populated with ALL options for the specified model
-	//		 Now that we are creating a ConfiguredCar, we only want the individual selections.
-	//		 An alternative approach would be to create a separate data container for the ConfiguredCar.
+	// Now that we are creating a ConfiguredCar, we only want the individual selections.
+	// An alternative approach would be to create a separate data container for the ConfiguredCar.
+
 	ConfiguredCarModel.Engines.Empty();
 	ConfiguredCarModel.ExteriorColors.Empty();
 	ConfiguredCarModel.InteriorColors.Empty();
@@ -457,6 +431,16 @@ void ACarConfiguratorHUD::AddConfiguredCarItem(const FString& Name) const
 	AddConfiguredCarItem(Name, "", -1);
 }
 
+void ACarConfiguratorHUD::ResetModelPreview() const
+{
+	ShowModelPreview(false);
+
+	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ModelPreview)
+	{
+		CarConfiguratorOverlay->ModelPreview->SetBrushFromTexture(nullptr);
+	}
+}
+
 void ACarConfiguratorHUD::ResetConfiguredCar() const
 {
 	const bool bCanResetConfiguredCar =
@@ -472,21 +456,29 @@ void ACarConfiguratorHUD::ResetConfiguredCar() const
 	}
 }
 
-void ACarConfiguratorHUD::ResetModelsAndRelatedOptions() const
+template<typename T>
+void ACarConfiguratorHUD::AddComboBoxOptions(UComboBoxString* ComboBox, const TArray<T>& Options) const
 {
-	const bool bCanResetCarConfiguratorOverlay = 
-		CarConfiguratorOverlay &&
-		CarConfiguratorOverlay->Models &&
-		CarConfiguratorOverlay->Engines &&
-		CarConfiguratorOverlay->ColorsExterior &&
-		CarConfiguratorOverlay->ColorsInterior;
-
-	if (bCanResetCarConfiguratorOverlay)
+	if (ComboBox)
 	{
-		ResetComboBox(CarConfiguratorOverlay->Models);
-		ResetComboBox(CarConfiguratorOverlay->Engines);
-		ResetComboBox(CarConfiguratorOverlay->ColorsExterior);
-		ResetComboBox(CarConfiguratorOverlay->ColorsInterior);		
+		ComboBox->ClearOptions();
+
+		if (Options.Num() > 0)
+		{
+			for (T Option : Options)
+			{
+				ComboBox->AddOption(Option.Name);
+			}
+
+			ComboBox->SetSelectedIndex(0);
+			ComboBox->SetIsEnabled(true);
+		}
+		else
+		{
+			ComboBox->AddOption("None Available");
+			ComboBox->SetSelectedIndex(0);
+			ComboBox->SetIsEnabled(false);			
+		}		
 	}
 }
 
@@ -502,6 +494,15 @@ FText ACarConfiguratorHUD::GetFormattedPrice(const int32& Price) const
 {
 	// NOTE: CurrencyCode is hard-coded, but could be passed in as an ENUM to support other currencies
 	return FText::AsCurrencyBase(Price, "GBP");
+}
+
+void ACarConfiguratorHUD::ReInitializeCarConfigurator()
+{
+	// reset the data container
+	ConfiguredCar = FCar();
+
+	ResetModelPreview();
+	ResetConfiguredCar();	
 }
 
 void ACarConfiguratorHUD::OnQuit()
