@@ -129,11 +129,12 @@ private:
 	void OnSelectInteriorColor(const FString SelectedInteriorColor, const ESelectInfo::Type SelectionInfoType);
 
 	/**
-	 * Updates the number of available cars for selection
+	 * Updates the number of available cars for selection, includes the number of cars, unique manufacturers, and unique models
 	 *
 	 * @param AvailableCars The number of available cars to display
+	 * @param UniqueManufacturers The number of unique manufacturers to display
 	 */
-	void UpdateAvailableCars(const int32 AvailableCars) const;
+	void UpdateAvailableCars(const int32 AvailableCars, const int32 UniqueManufacturers) const;
 
 	/**
 	 * Updates the options within the manufacturers combobox
@@ -328,6 +329,12 @@ private:
 	 * Re-initializes the car configurator, resetting the model preview, and configured car overlay.
 	 */
 	void ReInitializeCarConfigurator();
+
+	/**
+	 * Delegate for taking a screenshot and opening the configured save screenshot directory.
+	 */
+	UFUNCTION()
+	void TakeScreenShot();
 
 	/**
 	 * Delegate for quitting the game/application

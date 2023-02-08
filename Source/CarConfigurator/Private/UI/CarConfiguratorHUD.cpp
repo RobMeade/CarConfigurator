@@ -13,6 +13,8 @@
 #include "Engine/Texture2D.h"
 #include "Kismet/KismetSystemLibrary.h"
 
+#include "Misc/Paths.h"
+
 #include "Types/CarEngine.h"
 #include "Types/CarManufacturer.h"
 #include "Types/CarModel.h"
@@ -68,6 +70,11 @@ void ACarConfiguratorHUD::BindDelegates()
 			CarConfiguratorOverlay->ColorsInterior->OnSelectionChanged.AddDynamic(this, &ACarConfiguratorHUD::OnSelectInteriorColor);
 		}
 
+		if (CarConfiguratorOverlay->ScreenShot)
+		{
+			CarConfiguratorOverlay->ScreenShot->OnClicked.AddDynamic(this, &ACarConfiguratorHUD::TakeScreenShot);
+		}
+
 		if (CarConfiguratorOverlay->Quit)
 		{
 			CarConfiguratorOverlay->Quit->OnClicked.AddDynamic(this, &ACarConfiguratorHUD::OnQuit);
@@ -85,7 +92,7 @@ void ACarConfiguratorHUD::DisplayCarData()
 		{
 			Cars->InitializeData();
 
-			UpdateAvailableCars(Cars->GetCars().Num());
+			UpdateAvailableCars(Cars->GetCars().Num(), Cars->GetManufacturers().Num());
 			UpdateManufacturers(Cars->GetManufacturers());
 		}
 	}
@@ -161,11 +168,16 @@ void ACarConfiguratorHUD::OnSelectInteriorColor(const FString SelectedInteriorCo
 	}
 }
 
-void ACarConfiguratorHUD::UpdateAvailableCars(const int32 AvailableCars) const
+void ACarConfiguratorHUD::UpdateAvailableCars(const int32 AvailableCars, const int32 UniqueManufacturers) const
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->AvailableCars)
 	{
-		CarConfiguratorOverlay->AvailableCars->SetText(FText::FromString("Available Cars: " + FString::FromInt(AvailableCars)));
+		const FString AvailableCarsText = 
+			FString::FromInt(AvailableCars) + " (" + 
+			FString::FromInt(AvailableCars) + " models, " + 
+			FString::FromInt(UniqueManufacturers) + " manufacturers)";
+
+		CarConfiguratorOverlay->AvailableCars->SetText(FText::FromString(AvailableCarsText));
 	}
 }
 
@@ -503,6 +515,14 @@ void ACarConfiguratorHUD::ReInitializeCarConfigurator()
 
 	ResetModelPreview();
 	ResetConfiguredCar();	
+}
+
+void ACarConfiguratorHUD::TakeScreenShot()
+{
+	FScreenshotRequest::RequestScreenshot("ScreenShot", true, true);
+
+	const FString ScreenShotDirectory = FPaths::ConvertRelativePathToFull(FPaths::ScreenShotDir());
+	UKismetSystemLibrary::LaunchURL("file://" + ScreenShotDirectory);
 }
 
 void ACarConfiguratorHUD::OnQuit()

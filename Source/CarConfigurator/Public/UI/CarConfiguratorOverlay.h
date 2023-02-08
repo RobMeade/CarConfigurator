@@ -65,6 +65,10 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UButton* Quit;
 
+	// TEMP - Testing
+	UPROPERTY(meta = (BindWidget))
+	UButton* ScreenShot;
+
 
 protected:
 

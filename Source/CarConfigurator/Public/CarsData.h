@@ -123,5 +123,4 @@ private:
 	/** An array of unique manufacturers, acts as a helper array to remove excessive looping of the main Cars array */
 	UPROPERTY()
 	TArray<FCarManufacturer> Manufacturers;
-
 };
