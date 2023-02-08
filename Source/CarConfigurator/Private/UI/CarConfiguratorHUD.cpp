@@ -223,7 +223,7 @@ void ACarConfiguratorHUD::UpdateColorsInterior(const TArray<FCarColorInterior>& 
 
 void ACarConfiguratorHUD::SelectManufacturer(const FCarManufacturer& Manufacturer)
 {
-	ReInitializeCarConfigurator();
+	ReInitializeCarConfigurator(false);
 
 	SetConfiguredCarManufacturer(Manufacturer);
 
@@ -235,14 +235,10 @@ void ACarConfiguratorHUD::SelectManufacturer(const FCarManufacturer& Manufacture
 
 void ACarConfiguratorHUD::SelectModel(const FCarModel& Model) 
 {
+	ReInitializeCarConfigurator(true);
+
 	FCarModel ConfiguredCarModel = Model;
-
-	if (Model.ExteriorColors.Num() > 0)
-	{
-		ShowModelPreview(true);
-		UpdateModelPreview(Model.ExteriorColors[0].PreviewTexture);		
-	}
-
+	
 	// NOTE: We empty Engines, ExteriorColors, and InteriorColors as they will be populated with ALL options for the specified model
 	// Now that we are creating a ConfiguredCar, we only want the individual selections.
 	// An alternative approach would be to create a separate data container for the ConfiguredCar.
@@ -275,22 +271,19 @@ void ACarConfiguratorHUD::SelectInteriorColor(const FCarColorInterior& InteriorC
 	SetConfiguredCarInteriorColor(InteriorColor);
 }
 
-void ACarConfiguratorHUD::ShowModelPreview(const bool bShowModelPreview) const
-{
-	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ModelPreview)
-	{
-		const ESlateVisibility Visibility = bShowModelPreview ? ESlateVisibility::Visible : ESlateVisibility::Hidden;
-		CarConfiguratorOverlay->ModelPreview->SetVisibility(Visibility);
-	}
-}
-
 void ACarConfiguratorHUD::UpdateModelPreview(UTexture2D* PreviewTexture) const
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ModelPreview)
 	{
 		if (PreviewTexture)
 		{
+			CarConfiguratorOverlay->ModelPreview->SetVisibility(ESlateVisibility::Visible);				
 			CarConfiguratorOverlay->ModelPreview->SetBrushFromTexture(PreviewTexture);			
+		}
+		else
+		{
+			CarConfiguratorOverlay->ModelPreview->SetVisibility(ESlateVisibility::Hidden);
+			CarConfiguratorOverlay->ModelPreview->SetBrushFromTexture(nullptr);
 		}
 	}
 }
@@ -428,7 +421,7 @@ void ACarConfiguratorHUD::AddConfiguredCarItem(const FString& Name, const FStrin
 				ConfiguredItem->Price->SetText(GetFormattedPrice(Price));				
 			}
 
-			CarConfiguratorOverlay->ConfiguredCarOverlay->Items->AddChildToVerticalBox(ConfiguredItem);			
+			CarConfiguratorOverlay->ConfiguredCarOverlay->Items->AddChildToVerticalBox(ConfiguredItem);
 		}
 	}
 }
@@ -441,16 +434,6 @@ void ACarConfiguratorHUD::AddConfiguredCarItem(const FString& Name, const int32&
 void ACarConfiguratorHUD::AddConfiguredCarItem(const FString& Name) const
 {
 	AddConfiguredCarItem(Name, "", -1);
-}
-
-void ACarConfiguratorHUD::ResetModelPreview() const
-{
-	ShowModelPreview(false);
-
-	if (CarConfiguratorOverlay && CarConfiguratorOverlay->ModelPreview)
-	{
-		CarConfiguratorOverlay->ModelPreview->SetBrushFromTexture(nullptr);
-	}
 }
 
 void ACarConfiguratorHUD::ResetConfiguredCar() const
@@ -473,6 +456,8 @@ void ACarConfiguratorHUD::AddComboBoxOptions(UComboBoxString* ComboBox, const TA
 {
 	if (ComboBox)
 	{
+		// disable combobox as ClearOptions() will trigger OnSelectionChanged() to be called
+		ComboBox->SetIsEnabled(false);
 		ComboBox->ClearOptions();
 
 		if (Options.Num() > 0)
@@ -482,15 +467,16 @@ void ACarConfiguratorHUD::AddComboBoxOptions(UComboBoxString* ComboBox, const TA
 				ComboBox->AddOption(Option.Name);
 			}
 
-			ComboBox->SetSelectedIndex(0);
 			ComboBox->SetIsEnabled(true);
 		}
 		else
-		{
+		{	
 			ComboBox->AddOption("None Available");
-			ComboBox->SetSelectedIndex(0);
-			ComboBox->SetIsEnabled(false);			
-		}		
+		}
+
+		// must be called after SetIsEnabled()
+		// if not, OnSelectionChanged delegates will not handle the selection
+		ComboBox->SetSelectedIndex(0);
 	}
 }
 
@@ -508,12 +494,23 @@ FText ACarConfiguratorHUD::GetFormattedPrice(const int32& Price) const
 	return FText::AsCurrencyBase(Price, "GBP");
 }
 
-void ACarConfiguratorHUD::ReInitializeCarConfigurator()
+void ACarConfiguratorHUD::ReInitializeCarConfigurator(const bool bRetainManufacturer)
 {
-	// reset the data container
-	ConfiguredCar = FCar();
+	// retaining the manufacturer is necessary in the scenario of a different model being chosen for the same manufacturer
+	// failure to do so will mean that the manufacturer data is lost, and not displayed on the configured car overlay
+	if (bRetainManufacturer)
+	{
+		FCarManufacturer Manufacturer = ConfiguredCar.Manufacturer;
 
-	ResetModelPreview();
+		ConfiguredCar = FCar();
+		ConfiguredCar.Manufacturer = Manufacturer;
+	}
+	else
+	{
+		// reset the data container
+		ConfiguredCar = FCar();		
+	}
+
 	ResetConfiguredCar();	
 }
 

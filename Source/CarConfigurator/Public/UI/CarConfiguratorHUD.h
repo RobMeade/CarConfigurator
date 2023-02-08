@@ -206,15 +206,10 @@ private:
 	 */
 	void SelectInteriorColor(const FCarColorInterior& InteriorColor);
 
-	/**
-	 * Shows or hides the model preview
-	 *
-	 * @param bShowModelPreview Indicates whether to show the model preview or not
-	 */
-	void ShowModelPreview(const bool bShowModelPreview) const;
-
 	/*
-	 * Sets the preview texture for the model preview image
+	 * Sets the preview texture for the model preview image.
+	 *
+	 * If the PreviewTexture is not valid, the model preview will be hidden.
 	 *
 	 * @param PreviewText The preview texture to set
 	 */
@@ -290,11 +285,6 @@ private:
 	 */
 	void AddConfiguredCarItem(const FString& Name) const;
 
-	/**
-	 * Resets the model preview, removing any set model textures
-	 */
-	void ResetModelPreview() const;
-
 	/** Removes all items from the configured car overlay and resets the total price to zero */
 	void ResetConfiguredCar() const;
 
@@ -326,9 +316,9 @@ private:
 	FText GetFormattedPrice(const int32& Price) const;
 
 	/**
-	 * Re-initializes the car configurator, resetting the model preview, and configured car overlay.
+	 * Re-initializes the car configurator and configured car overlay.
 	 */
-	void ReInitializeCarConfigurator();
+	void ReInitializeCarConfigurator(const bool bRetainManufacturer);
 
 	/**
 	 * Delegate for taking a screenshot and opening the configured save screenshot directory.
