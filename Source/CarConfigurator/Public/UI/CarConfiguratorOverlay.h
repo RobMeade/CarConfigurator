@@ -9,6 +9,7 @@
 
 
 class UButton;
+class UCheckBox;
 class UComboBoxString;
 class UImage;
 class UTextBlock;
@@ -41,6 +42,30 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* Models;
 
+	/** Used to apply filtering for the selected model's engines */
+	UPROPERTY(meta = (BindWidget))
+	UCheckBox* FuelFilterPetrol;
+
+	/** Used to apply filtering for the selected model's engines */
+	UPROPERTY(meta = (BindWidget))
+	UCheckBox* FuelFilterDiesel;
+
+	/** Used to apply filtering for the selected model's engines */
+	UPROPERTY(meta = (BindWidget))
+	UCheckBox* FuelFilterElectric;
+
+	/** Used to apply filtering for the selected model's engines */
+	UPROPERTY(meta = (BindWidget))
+	UCheckBox* FuelFilterHybrid;
+
+	/** Used to apply filtering for the selected model's engines */
+	UPROPERTY(meta = (BindWidget))
+	UCheckBox* GearboxFilterManual;
+
+	/** Used to apply filtering for the selected model's engines */
+	UPROPERTY(meta = (BindWidget))
+	UCheckBox* GearboxFilterAutomatic;
+
 	/** Used to display all engine options for a specific model, and enable the selection of a specific engine */
 	UPROPERTY(meta = (BindWidget))
 	UComboBoxString* Engines;
@@ -65,7 +90,7 @@ public:
 	UPROPERTY(meta = (BindWidget))
 	UButton* Quit;
 
-	// TEMP - Testing
+	/** Used to take a screenshot */
 	UPROPERTY(meta = (BindWidget))
 	UButton* ScreenShot;
 

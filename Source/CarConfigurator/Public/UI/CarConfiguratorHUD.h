@@ -11,6 +11,7 @@
 
 
 class UCarConfiguratorOverlay;
+class UCheckBox;
 class UComboBoxString;
 class UTexture2D;
 
@@ -77,6 +78,14 @@ private:
 	UPROPERTY()
 	FCar ConfiguredCar;
 
+	/** The engine type filters to apply when filtering engines for a specific model */
+	UPROPERTY()
+	TArray<ECarEngineType> EngineTypeFilters;
+
+	/** The gearbox type filters to apply when filtering engines for a specific model */
+	UPROPERTY()
+	TArray<ECarGearBoxType> GearBoxTypeFilters;
+
 	/** Adds the overlay widget to the viewport */
 	void AddCarConfiguratorOverlay();
 
@@ -129,6 +138,54 @@ private:
 	void OnSelectInteriorColor(const FString SelectedInteriorColor, const ESelectInfo::Type SelectionInfoType);
 
 	/**
+	 * Delegate for selecting the petrol fuel filter
+	 *
+	 * @param bIsChecked Indicates whether the checkbox has been checked
+	 */
+	UFUNCTION()
+	void OnFuelFilterPetrolCheckStateChanged(bool bIsChecked);
+
+	/**
+	 * Delegate for selecting the diesel fuel filter
+	 *
+	 * @param bIsChecked Indicates whether the checkbox has been checked
+	 */
+	UFUNCTION()
+	void OnFuelFilterDieselCheckStateChanged(bool bIsChecked);
+
+	/**
+	 * Delegate for selecting the electric fuel filter
+	 *
+	 * @param bIsChecked Indicates whether the checkbox has been checked
+	 */
+	UFUNCTION()
+	void OnFuelFilterElectricCheckStateChanged(bool bIsChecked);
+
+	/**
+	 * Delegate for selecting the hybrid fuel filter
+	 *
+	 * @param bIsChecked Indicates whether the checkbox has been checked
+	 */
+	UFUNCTION()
+	void OnFuelFilterHybridCheckStateChanged(bool bIsChecked);
+
+	/**
+	 * Delegate for selecting the manual gearbox filter
+	 *
+	 * @param bIsChecked Indicates whether the checkbox has been checked
+	 */
+	UFUNCTION()
+	void OnGearBoxFilterManualCheckStateChanged(bool bIsChecked);
+
+	/**
+	 * Delegate for selecting the automatic gearbox filter
+	 *
+	 * @param bIsChecked Indicates whether the checkbox has been checked
+	 */
+	UFUNCTION()
+	void OnGearBoxFilterAutomaticCheckStateChanged(bool bIsChecked);
+
+	/**
 	 * Updates the number of available cars for selection, includes the number of cars, unique manufacturers, and unique models
 	 *
 	 * @param AvailableCars The number of available cars to display
@@ -155,7 +212,7 @@ private:
 	 *
 	 * @param Engines A reference to the array of specific engines
 	 */
-	void UpdateEngines(const TArray<FCarEngine>& Engines) const;
+	void UpdateEngines(const TArray<FCarEngine>& Engines) ;
 
 	/**
 	 * Updates the options within the colors exterior combobox
@@ -285,8 +342,52 @@ private:
 	 */
 	void AddConfiguredCarItem(const FString& Name) const;
 
+	/**
+	 * Gets the total price of the configured car and updates the configured car overlay
+	 */
+	void UpdateTotalPrice() const;
+
 	/** Removes all items from the configured car overlay and resets the total price to zero */
 	void ResetConfiguredCar() const;
+
+	/**
+	 * Enables or disables the engine filtering options, both engine and gearbox, based on whether the specified array of engines
+	 * contains engines with the engine type or gearbox type for the filters
+	 *
+	 * param Engines The engines to check for the filter types
+	 */
+	void UpdateEngineFilteringOptions(const TArray<FCarEngine>& Engines);
+
+	/**
+	 * Resets the engine filtering, clearing any selected options
+	 */
+	void ResetEngineFiltering();
+
+	/**
+	 * Enables or disables the engine type filter for the specified engine type
+	 *
+	 * @param EngineType The type of filter to either enable or disable
+	 * @param bIsEnabled Indicates whether to enable or disable the filter
+	 */
+	void EnableEngineTypeFilter(const ECarEngineType& EngineType, const bool bIsEnabled);
+
+	/**
+	 * Enables or disables the gearbox type filter for the specified gearbox type
+	 *
+	 * @param GearBoxType The type of filter to either enable or disable
+	 * @param bIsEnabled Indicates whether to enable or disable the filter
+	 */
+	void EnableGearBoxTypeFilter(const ECarGearBoxType& GearBoxType, const bool bIsEnabled);
+
+	/**
+	 * Enables all engine filters, both engine and gearbox
+	 */
+	void EnableAllEngineFilters();
+
+	/**
+	 * Disables all engine filters, both engine and gearbox
+	 */
+	void DisableAllEngineFilters();
 
 	/**
 	 * Adds the array of options to the combobox.
@@ -307,6 +408,22 @@ private:
 	 * @param ComboBox The combobox to remove items from
 	 */
 	void ResetComboBox(UComboBoxString* ComboBox) const;
+
+	/**
+	 * Sets the checked state of the checkbox.
+	 *
+	 * @param CheckBox The checkbox to set
+	 * @param CheckBoxState The state to set
+	 */
+	void SetCheckBoxCheckedState(UCheckBox* CheckBox, const ECheckBoxState& CheckBoxState) const;
+
+	/**
+	 * Enables or disables the specified checkbox
+	 *
+	 * @param CheckBox The checkbox to enable or disable
+	 * @param bIsEnabled Indicates whether to enable or disable the checkbox
+	 */
+	void EnableCheckBox(UCheckBox* CheckBox, const bool bIsEnabled);
 
 	/**
 	 * Returns the specified price as formatted currency.

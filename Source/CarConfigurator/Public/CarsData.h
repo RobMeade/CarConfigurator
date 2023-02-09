@@ -79,6 +79,35 @@ public:
 	FCarEngine GetEngine(const FString& ModelName, const FString& EngineName) const;
 
 	/**
+	 * Gets all of the engines for the specified model, matching the specified engine type and gearbox type filters
+	 *
+	 * @param ModelName The model to return the engines for
+	 * @param EngineTypeFilters The engine type filters to use when comparing engines
+	 * @param GearBoxTypeFilters The gearbox type filters to use when comparing engines
+	 */
+	TArray<FCarEngine> GetEnginesFiltered(const FString& ModelName, const TArray<ECarEngineType>& EngineTypeFilters, const TArray<ECarGearBoxType>& GearBoxTypeFilters) const;
+
+	/**
+	 * Checks to see whether the specified array of engines contains the specific engine type
+	 *
+	 * @param Engines The engines to check for the engine type
+	 * @param EngineType The engine type to check for
+	 *
+	 * @returns True if engines contain the engine type, false if not
+	 */
+	bool HasEngineType(const TArray<FCarEngine>& Engines, const ECarEngineType& EngineType) const;
+
+	/**
+	 * Checks to see whether the specified array of engines contains the specific gearbox type
+	 *
+	 * @param Engines The engines to check for the gearbox type
+	 * @param GearBoxType The gearbox type to check for
+	 *
+	 * @returns True if engines contain the gearbox type, false if not
+	 */
+	bool HasGearBoxType(const TArray<FCarEngine>& Engines, const ECarGearBoxType& GearBoxType) const;
+
+	/**
 	 * Gets the first matching exterior color from Cars for the specified model name and color name
 	 *
 	 * @param ModelName The name of the model to return the exterior color for, improves searching

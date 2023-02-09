@@ -10,4 +10,6 @@ enum class ECarGearBoxType : uint8
 	ECGT_Manual UMETA(DisplayName = "Manual"),
 	/** Automatic transmission */
 	ECGT_Automatic UMETA(DisplayName = "Automatic"),
+
+	NUM UMETA(Hidden)
 };

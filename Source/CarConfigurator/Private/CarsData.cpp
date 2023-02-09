@@ -123,8 +123,9 @@ FCarModel UCarsData::GetModel(const FString& ModelName) const
 
 FCarEngine UCarsData::GetEngine(const FString& ModelName, const FString& EngineName) const
 {
-	const FCarModel Model = GetModel(ModelName);
 	FCarEngine Result;
+
+	const FCarModel Model = GetModel(ModelName);
 
 	if (Cars.Num() > 0)
 	{
@@ -141,10 +142,113 @@ FCarEngine UCarsData::GetEngine(const FString& ModelName, const FString& EngineN
 	return Result;
 }
 
+TArray<FCarEngine> UCarsData::GetEnginesFiltered(const FString& ModelName, const TArray<ECarEngineType>& EngineTypeFilters, const TArray<ECarGearBoxType>& GearBoxTypeFilters) const
+{
+	TArray<FCarEngine> Result;
+
+	const FCarModel Model = GetModel(ModelName);
+
+	constexpr int32 NumberOfCarEngineTypes = static_cast<int32>(ECarEngineType::NUM);
+	constexpr int32 NumberOfCarGearBoxTypes = static_cast<int32>(ECarGearBoxType::NUM);
+
+	// no filters or all filters, in either case, return all engines for the specific model
+	if (EngineTypeFilters.Num() == 0 && GearBoxTypeFilters.Num() == 0 || EngineTypeFilters.Num() == NumberOfCarEngineTypes && GearBoxTypeFilters.Num() == NumberOfCarGearBoxTypes)
+	{
+		Result = Model.Engines;
+		return Result;
+	}
+
+	for (auto& Engine : Model.Engines)
+	{
+		// only compare engine types
+		if (EngineTypeFilters.Num() > 0 && GearBoxTypeFilters.Num() == 0)
+		{
+			if (EngineTypeFilters.Contains(Engine.EngineType))
+			{
+				Result.Add(Engine);
+			}
+		}
+		// only compare gearbox types
+		else if (EngineTypeFilters.Num() == 0 && GearBoxTypeFilters.Num() > 0)
+		{
+			if (GearBoxTypeFilters.Contains(Engine.GearBoxType))
+			{
+				Result.Add(Engine);
+			}
+		}
+		// we have some, but not all, of each type of filter, compare both engine types and gearbox types
+		else if (EngineTypeFilters.Num() > 0 && EngineTypeFilters.Num() < NumberOfCarEngineTypes && GearBoxTypeFilters.Num() > 0 && GearBoxTypeFilters.Num() < NumberOfCarGearBoxTypes)
+		{
+			if (EngineTypeFilters.Contains(Engine.EngineType) && GearBoxTypeFilters.Contains(Engine.GearBoxType))
+			{
+				Result.Add(Engine);
+			}
+		}
+		// we have some, but not all, of the engine types, and all of the gearbox types, compare both engine and gearbox types
+		else if (EngineTypeFilters.Num() > 0 && EngineTypeFilters.Num() < NumberOfCarEngineTypes && GearBoxTypeFilters.Num() == NumberOfCarGearBoxTypes)
+		{
+			if (EngineTypeFilters.Contains(Engine.EngineType) && GearBoxTypeFilters.Contains(Engine.GearBoxType))
+			{
+				Result.Add(Engine);
+			}
+		}
+		// we have all of the engine types, and some, but not all, of the gearbox types, compare both engine and gearbox types
+		else if (EngineTypeFilters.Num() == NumberOfCarEngineTypes && GearBoxTypeFilters.Num() > 0 && GearBoxTypeFilters.Num() < NumberOfCarGearBoxTypes)
+		{
+			if (EngineTypeFilters.Contains(Engine.EngineType) && GearBoxTypeFilters.Contains(Engine.GearBoxType))
+			{
+				Result.Add(Engine);
+			}
+		}
+	}
+
+	return Result;
+}
+
+bool UCarsData::HasEngineType(const TArray<FCarEngine>& Engines, const ECarEngineType& EngineType) const
+{
+	bool Result = false;
+
+	if (Engines.Num() > 0)
+	{
+		for (auto& Engine : Engines)
+		{
+			if (Engine.EngineType == EngineType)
+			{
+				Result = true;
+				break;
+			}
+		}
+	}
+
+	return Result;
+}
+
+bool UCarsData::HasGearBoxType(const TArray<FCarEngine>& Engines, const ECarGearBoxType& GearBoxType) const
+{
+	bool Result = false;
+
+	if (Engines.Num() > 0)
+	{
+		for (auto& Engine : Engines)
+		{
+			if (Engine.GearBoxType == GearBoxType)
+			{
+				Result = true;
+				break;
+			}
+		}
+	}
+
+	return Result;
+}
+
+
 FCarColorExterior UCarsData::GetExteriorColor(const FString& ModelName, const FString& ColorName) const
 {
-	const FCarModel Model = GetModel(ModelName);
 	FCarColorExterior Result;
+
+	const FCarModel Model = GetModel(ModelName);
 
 	if (Cars.Num() > 0)
 	{
@@ -163,8 +267,9 @@ FCarColorExterior UCarsData::GetExteriorColor(const FString& ModelName, const FS
 
 FCarColorInterior UCarsData::GetInteriorColor(const FString& ModelName, const FString& ColorName) const
 {
-	const FCarModel Model = GetModel(ModelName);
 	FCarColorInterior Result;
+
+	const FCarModel Model = GetModel(ModelName);
 
 	if (Cars.Num() > 0)
 	{

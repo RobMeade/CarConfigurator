@@ -11,7 +11,9 @@ enum class ECarEngineType : uint8
 	/** Combustion engine using diesel as fuel */
 	ECET_Diesel UMETA(DisplayName = "Diesel"),
 	/** Electric motor instead of combustion engine */
-	ECET_Electic UMETA(DisplayName = "Electric"),
+	ECET_Electric UMETA(DisplayName = "Electric"),
 	/** Combustion engine and electric motor */
 	ECET_Hybrid UMETA(DisplayName = "Hybrid"),
+
+	NUM UMETA(Hidden)
 };

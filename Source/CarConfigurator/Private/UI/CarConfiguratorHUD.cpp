@@ -5,6 +5,7 @@
 
 #include "Blueprint/UserWidget.h"
 #include "Components/Button.h"
+#include "Components/CheckBox.h"
 #include "Components/ComboBoxString.h"
 #include "Components/Image.h"
 #include "Components/PanelWidget.h"
@@ -65,9 +66,39 @@ void ACarConfiguratorHUD::BindDelegates()
 			CarConfiguratorOverlay->ColorsExterior->OnSelectionChanged.AddDynamic(this, &ACarConfiguratorHUD::OnSelectExteriorColor);
 		}
 
-		if (CarConfiguratorOverlay->ColorsExterior)
+		if (CarConfiguratorOverlay->ColorsInterior)
 		{
 			CarConfiguratorOverlay->ColorsInterior->OnSelectionChanged.AddDynamic(this, &ACarConfiguratorHUD::OnSelectInteriorColor);
+		}
+
+		if (CarConfiguratorOverlay->FuelFilterPetrol)
+		{
+			CarConfiguratorOverlay->FuelFilterPetrol->OnCheckStateChanged.AddDynamic(this, &ACarConfiguratorHUD::OnFuelFilterPetrolCheckStateChanged);
+		}
+
+		if (CarConfiguratorOverlay->FuelFilterDiesel)
+		{
+			CarConfiguratorOverlay->FuelFilterDiesel->OnCheckStateChanged.AddDynamic(this, &ACarConfiguratorHUD::OnFuelFilterDieselCheckStateChanged);
+		}
+
+		if (CarConfiguratorOverlay->FuelFilterElectric)
+		{
+			CarConfiguratorOverlay->FuelFilterElectric->OnCheckStateChanged.AddDynamic(this, &ACarConfiguratorHUD::OnFuelFilterElectricCheckStateChanged);
+		}
+
+		if (CarConfiguratorOverlay->FuelFilterHybrid)
+		{
+			CarConfiguratorOverlay->FuelFilterHybrid->OnCheckStateChanged.AddDynamic(this, &ACarConfiguratorHUD::OnFuelFilterHybridCheckStateChanged);
+		}
+
+		if (CarConfiguratorOverlay->GearboxFilterManual)
+		{
+			CarConfiguratorOverlay->GearboxFilterManual->OnCheckStateChanged.AddDynamic(this, &ACarConfiguratorHUD::OnGearBoxFilterManualCheckStateChanged);
+		}
+
+		if (CarConfiguratorOverlay->GearboxFilterAutomatic)
+		{
+			CarConfiguratorOverlay->GearboxFilterAutomatic->OnCheckStateChanged.AddDynamic(this, &ACarConfiguratorHUD::OnGearBoxFilterAutomaticCheckStateChanged);
 		}
 
 		if (CarConfiguratorOverlay->ScreenShot)
@@ -168,6 +199,93 @@ void ACarConfiguratorHUD::OnSelectInteriorColor(const FString SelectedInteriorCo
 	}
 }
 
+void ACarConfiguratorHUD::OnFuelFilterPetrolCheckStateChanged(bool bIsChecked)
+{
+	if (bIsChecked)
+	{
+		EngineTypeFilters.AddUnique(ECarEngineType::ECET_Petrol);
+	}
+	else
+	{
+		EngineTypeFilters.Remove(ECarEngineType::ECET_Petrol);
+	}
+
+	if (Cars)
+	{
+		UpdateEngines(Cars->GetEnginesFiltered(ConfiguredCar.Model.Name, EngineTypeFilters, GearBoxTypeFilters));	
+	}
+}
+
+void ACarConfiguratorHUD::OnFuelFilterDieselCheckStateChanged(bool bIsChecked)
+{
+	if (bIsChecked)
+	{
+		EngineTypeFilters.AddUnique(ECarEngineType::ECET_Diesel);
+	}
+	else
+	{
+		EngineTypeFilters.Remove(ECarEngineType::ECET_Diesel);
+	}
+
+	UpdateEngines(Cars->GetEnginesFiltered(ConfiguredCar.Model.Name, EngineTypeFilters, GearBoxTypeFilters));
+}
+
+void ACarConfiguratorHUD::OnFuelFilterElectricCheckStateChanged(bool bIsChecked)
+{
+	if (bIsChecked)
+	{
+		EngineTypeFilters.AddUnique(ECarEngineType::ECET_Electric);
+	}
+	else
+	{
+		EngineTypeFilters.Remove(ECarEngineType::ECET_Electric);
+	}
+
+	UpdateEngines(Cars->GetEnginesFiltered(ConfiguredCar.Model.Name, EngineTypeFilters, GearBoxTypeFilters));
+}
+
+void ACarConfiguratorHUD::OnFuelFilterHybridCheckStateChanged(bool bIsChecked)
+{
+	if (bIsChecked)
+	{
+		EngineTypeFilters.AddUnique(ECarEngineType::ECET_Hybrid);
+	}
+	else
+	{
+		EngineTypeFilters.Remove(ECarEngineType::ECET_Hybrid);
+	}
+
+	UpdateEngines(Cars->GetEnginesFiltered(ConfiguredCar.Model.Name, EngineTypeFilters, GearBoxTypeFilters));
+}
+
+void ACarConfiguratorHUD::OnGearBoxFilterManualCheckStateChanged(bool bIsChecked)
+{
+	if (bIsChecked)
+	{
+		GearBoxTypeFilters.AddUnique(ECarGearBoxType::ECGT_Manual);
+	}
+	else
+	{
+		GearBoxTypeFilters.Remove(ECarGearBoxType::ECGT_Manual);
+	}
+
+	UpdateEngines(Cars->GetEnginesFiltered(ConfiguredCar.Model.Name, EngineTypeFilters, GearBoxTypeFilters));
+}
+
+void ACarConfiguratorHUD::OnGearBoxFilterAutomaticCheckStateChanged(bool bIsChecked)
+{
+	if (bIsChecked)
+	{
+		GearBoxTypeFilters.AddUnique(ECarGearBoxType::ECGT_Automatic);
+	}
+	else
+	{
+		GearBoxTypeFilters.Remove(ECarGearBoxType::ECGT_Automatic);
+	}
+	
+	UpdateEngines(Cars->GetEnginesFiltered(ConfiguredCar.Model.Name, EngineTypeFilters, GearBoxTypeFilters));
+}
+
 void ACarConfiguratorHUD::UpdateAvailableCars(const int32 AvailableCars, const int32 UniqueManufacturers) const
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->AvailableCars)
@@ -197,12 +315,14 @@ void ACarConfiguratorHUD::UpdateModels(const TArray<FCarModel>& Models) const
 	}
 }
 
-void ACarConfiguratorHUD::UpdateEngines(const TArray<FCarEngine>& Engines) const
+void ACarConfiguratorHUD::UpdateEngines(const TArray<FCarEngine>& Engines)
 {
 	if (CarConfiguratorOverlay && CarConfiguratorOverlay->Engines)
 	{
 		AddComboBoxOptions<FCarEngine>(CarConfiguratorOverlay->Engines, Engines);
 	}
+
+	UpdateEngineFilteringOptions(Engines);
 }
 
 void ACarConfiguratorHUD::UpdateColorsExterior(const TArray<FCarColorExterior>& ColorsExterior) const
@@ -223,8 +343,8 @@ void ACarConfiguratorHUD::UpdateColorsInterior(const TArray<FCarColorInterior>& 
 
 void ACarConfiguratorHUD::SelectManufacturer(const FCarManufacturer& Manufacturer)
 {
+	ResetEngineFiltering();
 	ReInitializeCarConfigurator(false);
-
 	SetConfiguredCarManufacturer(Manufacturer);
 
 	if (Cars)
@@ -236,6 +356,7 @@ void ACarConfiguratorHUD::SelectManufacturer(const FCarManufacturer& Manufacture
 void ACarConfiguratorHUD::SelectModel(const FCarModel& Model) 
 {
 	ReInitializeCarConfigurator(true);
+	ResetEngineFiltering();
 
 	FCarModel ConfiguredCarModel = Model;
 	
@@ -322,55 +443,39 @@ void ACarConfiguratorHUD::SetConfiguredCarInteriorColor(const FCarColorInterior&
 
 void ACarConfiguratorHUD::UpdateConfiguredCar()
 {
-	const bool bCanUpdateConfiguredCar =
-		ConfiguredCarItemClass &&
-		ConfiguredCarItemHeadingClass &&
-		CarConfiguratorOverlay &&
-		CarConfiguratorOverlay->ConfiguredCarOverlay &&
-		CarConfiguratorOverlay->ConfiguredCarOverlay->Items &&
-		CarConfiguratorOverlay->ConfiguredCarOverlay->TotalPrice;
+	// reset
+	ResetConfiguredCar();
 
-	if (bCanUpdateConfiguredCar)
+	// manufacturer
+	AddConfiguredCarItemHeading("Manufacturer");
+	AddConfiguredCarItem(ConfiguredCar.Manufacturer.Name);
+
+	// model
+	AddConfiguredCarItemHeading("Model");
+	AddConfiguredCarItem(ConfiguredCar.Model.Name, ConfiguredCar.Model.Description, ConfiguredCar.Model.BasePrice);
+
+	// engine
+	if (ConfiguredCar.Model.Engines.Num() > 0)
 	{
-		// reset
-		ResetConfiguredCar();
-
-		// manufacturer
-		AddConfiguredCarItemHeading("Manufacturer");
-		AddConfiguredCarItem(ConfiguredCar.Manufacturer.Name);
-
-		// model
-		AddConfiguredCarItemHeading("Model");
-		AddConfiguredCarItem(ConfiguredCar.Model.Name, ConfiguredCar.Model.Description, ConfiguredCar.Model.BasePrice);
-
-		// engine
-		if (ConfiguredCar.Model.Engines.Num() > 0)
-		{
-			AddConfiguredCarItemHeading("Engine");
-			AddConfiguredCarItem(ConfiguredCar.Model.Engines[0].Name, ConfiguredCar.Model.Engines[0].Description, ConfiguredCar.Model.Engines[0].Price);
-		}
-
-		// color - exterior
-		if (ConfiguredCar.Model.ExteriorColors.Num() > 0)
-		{
-			AddConfiguredCarItemHeading("Color - Exterior");
-			AddConfiguredCarItem(ConfiguredCar.Model.ExteriorColors[0].Name, ConfiguredCar.Model.ExteriorColors[0].Price);			
-		}
-
-		// color - interior
-		if (ConfiguredCar.Model.InteriorColors.Num() > 0)
-		{
-			AddConfiguredCarItemHeading("Color - Interior");
-			AddConfiguredCarItem(ConfiguredCar.Model.InteriorColors[0].Name, ConfiguredCar.Model.InteriorColors[0].Price);			
-		}
-
-		// total price
-		if (Cars)
-		{
-			const int32 TotalPrice = Cars->GetTotalPriceForConfiguredCar(ConfiguredCar);
-			CarConfiguratorOverlay->ConfiguredCarOverlay->TotalPrice->SetText(GetFormattedPrice(TotalPrice));
-		}
+		AddConfiguredCarItemHeading("Engine");
+		AddConfiguredCarItem(ConfiguredCar.Model.Engines[0].Name, ConfiguredCar.Model.Engines[0].Description, ConfiguredCar.Model.Engines[0].Price);
 	}
+
+	// color - exterior
+	if (ConfiguredCar.Model.ExteriorColors.Num() > 0)
+	{
+		AddConfiguredCarItemHeading("Color - Exterior");
+		AddConfiguredCarItem(ConfiguredCar.Model.ExteriorColors[0].Name, ConfiguredCar.Model.ExteriorColors[0].Price);			
+	}
+
+	// color - interior
+	if (ConfiguredCar.Model.InteriorColors.Num() > 0)
+	{
+		AddConfiguredCarItemHeading("Color - Interior");
+		AddConfiguredCarItem(ConfiguredCar.Model.InteriorColors[0].Name, ConfiguredCar.Model.InteriorColors[0].Price);			
+	}
+
+	UpdateTotalPrice();
 }
 
 void ACarConfiguratorHUD::AddConfiguredCarItemHeading(const FString Name) const
@@ -436,6 +541,21 @@ void ACarConfiguratorHUD::AddConfiguredCarItem(const FString& Name) const
 	AddConfiguredCarItem(Name, "", -1);
 }
 
+void ACarConfiguratorHUD::UpdateTotalPrice() const
+{
+	const bool bCanUpdateTotalPrice =
+		Cars &&
+		CarConfiguratorOverlay &&
+		CarConfiguratorOverlay->ConfiguredCarOverlay &&
+		CarConfiguratorOverlay->ConfiguredCarOverlay->TotalPrice;
+
+	if (bCanUpdateTotalPrice)
+	{
+		const int32 TotalPrice = Cars->GetTotalPriceForConfiguredCar(ConfiguredCar);
+		CarConfiguratorOverlay->ConfiguredCarOverlay->TotalPrice->SetText(GetFormattedPrice(TotalPrice));		
+	}
+}
+
 void ACarConfiguratorHUD::ResetConfiguredCar() const
 {
 	const bool bCanResetConfiguredCar =
@@ -448,6 +568,116 @@ void ACarConfiguratorHUD::ResetConfiguredCar() const
 	{
 		CarConfiguratorOverlay->ConfiguredCarOverlay->Items->ClearChildren();
 		CarConfiguratorOverlay->ConfiguredCarOverlay->TotalPrice->SetText(GetFormattedPrice(0));		
+	}
+}
+
+void ACarConfiguratorHUD::UpdateEngineFilteringOptions(const TArray<FCarEngine>& Engines)
+{
+	if (Cars && Engines.Num() > 0)
+	{
+		// engine type filters
+		EnableEngineTypeFilter(ECarEngineType::ECET_Petrol, Cars->HasEngineType(Engines, ECarEngineType::ECET_Petrol));
+		EnableEngineTypeFilter(ECarEngineType::ECET_Diesel, Cars->HasEngineType(Engines, ECarEngineType::ECET_Diesel));
+		EnableEngineTypeFilter(ECarEngineType::ECET_Electric, Cars->HasEngineType(Engines, ECarEngineType::ECET_Electric));
+		EnableEngineTypeFilter(ECarEngineType::ECET_Hybrid, Cars->HasEngineType(Engines, ECarEngineType::ECET_Hybrid));
+
+		// gearbox type filters
+		EnableGearBoxTypeFilter(ECarGearBoxType::ECGT_Manual, Cars->HasGearBoxType(Engines, ECarGearBoxType::ECGT_Manual));
+		EnableGearBoxTypeFilter(ECarGearBoxType::ECGT_Automatic, Cars->HasGearBoxType(Engines, ECarGearBoxType::ECGT_Automatic));
+	}
+	else
+	{
+		DisableAllEngineFilters();
+	}
+}
+
+void ACarConfiguratorHUD::ResetEngineFiltering()
+{
+	if (CarConfiguratorOverlay)
+	{
+		SetCheckBoxCheckedState(CarConfiguratorOverlay->FuelFilterPetrol, ECheckBoxState::Unchecked);
+		SetCheckBoxCheckedState(CarConfiguratorOverlay->FuelFilterDiesel, ECheckBoxState::Unchecked);
+		SetCheckBoxCheckedState(CarConfiguratorOverlay->FuelFilterElectric, ECheckBoxState::Unchecked);
+		SetCheckBoxCheckedState(CarConfiguratorOverlay->FuelFilterHybrid, ECheckBoxState::Unchecked);	
+		SetCheckBoxCheckedState(CarConfiguratorOverlay->GearboxFilterManual, ECheckBoxState::Unchecked);	
+		SetCheckBoxCheckedState(CarConfiguratorOverlay->GearboxFilterAutomatic, ECheckBoxState::Unchecked);		
+	}
+
+	EngineTypeFilters.Empty();
+	GearBoxTypeFilters.Empty();
+}
+
+void ACarConfiguratorHUD::EnableEngineTypeFilter(const ECarEngineType& EngineType, const bool bIsEnabled)
+{
+	if (CarConfiguratorOverlay)
+	{
+		switch (EngineType)
+		{
+		case ECarEngineType::ECET_Petrol:
+			EnableCheckBox(CarConfiguratorOverlay->FuelFilterPetrol, bIsEnabled);
+			break;
+
+		case ECarEngineType::ECET_Diesel:
+			EnableCheckBox(CarConfiguratorOverlay->FuelFilterDiesel, bIsEnabled);
+			break;
+
+		case ECarEngineType::ECET_Electric:
+			EnableCheckBox(CarConfiguratorOverlay->FuelFilterElectric, bIsEnabled);
+			break;
+
+		case ECarEngineType::ECET_Hybrid:
+			EnableCheckBox(CarConfiguratorOverlay->FuelFilterHybrid, bIsEnabled);
+			break;
+
+		default:
+			break;
+		}		
+	}
+}
+
+void ACarConfiguratorHUD::EnableGearBoxTypeFilter(const ECarGearBoxType& GearBoxType, const bool bIsEnabled)
+{
+	if (CarConfiguratorOverlay)
+	{
+		switch (GearBoxType)
+		{
+		case ECarGearBoxType::ECGT_Manual:
+			EnableCheckBox(CarConfiguratorOverlay->GearboxFilterManual, bIsEnabled);
+			break;
+
+		case ECarGearBoxType::ECGT_Automatic:
+			EnableCheckBox(CarConfiguratorOverlay->GearboxFilterAutomatic, bIsEnabled);
+			break;
+
+		default:
+			break;
+		}
+	}
+}
+
+void ACarConfiguratorHUD::EnableAllEngineFilters()
+{
+	if (CarConfiguratorOverlay)
+	{
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterPetrol, true);
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterDiesel, true);
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterElectric, true);
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterHybrid, true);	
+		EnableCheckBox(CarConfiguratorOverlay->GearboxFilterManual, true);	
+		EnableCheckBox(CarConfiguratorOverlay->GearboxFilterAutomatic, true);	
+	}
+}
+
+void ACarConfiguratorHUD::DisableAllEngineFilters()
+{
+	if (CarConfiguratorOverlay)
+	{
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterPetrol, false);
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterDiesel, false);
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterElectric, false);
+		EnableCheckBox(CarConfiguratorOverlay->FuelFilterHybrid, false);	
+		EnableCheckBox(CarConfiguratorOverlay->GearboxFilterManual, false);	
+		EnableCheckBox(CarConfiguratorOverlay->GearboxFilterAutomatic, false);	
 	}
 }
 
@@ -485,6 +715,25 @@ void ACarConfiguratorHUD::ResetComboBox(UComboBoxString* ComboBox) const
 	if (ComboBox)
 	{
 		ComboBox->ClearOptions();		
+	}
+}
+
+void ACarConfiguratorHUD::SetCheckBoxCheckedState(UCheckBox* CheckBox, const ECheckBoxState& CheckBoxState) const
+{
+	if (CheckBox)
+	{
+		// setting the checkbox to disabled before changing it's state prevents a response to OnCheckedStateChanged 
+		CheckBox->SetIsEnabled(false);
+		CheckBox->SetCheckedState(CheckBoxState);
+		CheckBox->SetIsEnabled(true);
+	}
+}
+
+void ACarConfiguratorHUD::EnableCheckBox(UCheckBox* CheckBox, const bool bIsEnabled)
+{
+	if (CheckBox)
+	{
+		CheckBox->SetIsEnabled(bIsEnabled);
 	}
 }
 
